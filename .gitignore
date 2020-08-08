@@ -1,0 +1,6 @@
+source/
+remove/
+.idea/
+__pycache__/
+*.pyc
+config.py
