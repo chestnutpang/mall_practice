@@ -16,4 +16,10 @@ class RedisConn:
 
         logger.info('redis url:%s' % url)
 
-        cls.redis_conn = redis.from_url(url)
+        for _ in range(5):
+            try:
+                cls.redis_conn = redis.from_url(url)
+            except Exception as e:
+                logger.error(f'redis connect error:{e}')
+                continue
+            break

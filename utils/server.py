@@ -3,6 +3,9 @@ from gevent.pywsgi import WSGIServer
 from utils.signal_tool import SignalTool
 from utils.log_tool import log_init
 from utils.redis_tool import RedisConn
+from utils.es_tool import ESConn
+from utils.mysql_tool import db_init
+from utils.server_tool import *
 import logging
 import traceback
 logger = logging.getLogger('server')
@@ -21,13 +24,13 @@ class MallServer:
         注册路由
         异常处理
         钩子函数，请求前处理与请求后处理
-
         """
         cls.init_register()
-
-        # cls.app.errorhandler(Exception)
-        # cls.app.before_request()
-        # cls.app.after_request()
+        cls.app.config['SQLALCHEMY_DATABASE_URI'] = cls.config.SQLALCHEMY_DATABASE_URI
+        cls.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = cls.config.SQLALCHEMY_TRACK_MODIFICATIONS
+        cls.app.errorhandler(Exception)(handle_error)
+        cls.app.before_request(before_request)
+        cls.app.after_request(after_request)
 
     @classmethod
     def run(cls, ip, port):
@@ -41,9 +44,11 @@ class Application:
     @classmethod
     def init(cls, config):
         try:
+            db_init(MallServer.app)
             SignalTool.init(config.pid_path)
             log_init(config.log_path, config.log_level, config.log_reverse, config.log_to_console)
             RedisConn.init(config.redis_host, config.redis_post, config.redis_password, config.redis_db)
+            ESConn.init(config.es_host, config.es_port)
         except Exception as e:
             logger.critical(f'application init fail: {e}')
             logger.critical(traceback.format_tb(e.__traceback__))
@@ -55,5 +60,6 @@ class Application:
 
     @classmethod
     def main(cls):
+        MallServer.init()
         cls.init(MallServer.config)
         cls.run(MallServer.config)
