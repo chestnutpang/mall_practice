@@ -1,6 +1,7 @@
 from flask import Blueprint
 import functools
 import logging
+import traceback
 
 logger = logging.getLogger('server_tool')
 
@@ -34,8 +35,10 @@ def after_request(response):
 
 # 错误处理
 def handle_error(error):
+    logger.error(traceback.format_tb(error.__traceback__))
     return {
-        'error': f'{error}'
+        'error': f'{error}',
+        'traceback': f'{traceback.format_tb(error.__traceback__)}',
     }
 
 

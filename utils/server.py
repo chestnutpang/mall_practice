@@ -14,7 +14,7 @@ logger = logging.getLogger('server')
 # 服务器类
 class MallServer:
     init_register = None
-    app = Flask('')
+    app = Flask('__name__')
     config = None
 
     @classmethod

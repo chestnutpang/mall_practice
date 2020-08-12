@@ -47,3 +47,10 @@ class DbBase(db.Model):
 
     def serialize(self):
         pass
+
+
+def data_to_dict(keys, values):
+    res = {}
+    for i in range(len(keys)):
+        res[keys[i]] = values[i]
+    return res
