@@ -4,3 +4,4 @@ remove/
 __pycache__/
 *.pyc
 config.py
+crawler/

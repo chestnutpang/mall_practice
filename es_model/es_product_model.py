@@ -1,12 +1,25 @@
-from utils.es_tool import ESControl
+from elasticsearch_dsl import Document, Keyword, Text, Nested, connections
 
 
-class EsProduct:
-    name = 'product'
+class EsProduct(Document):
+    productSn = Keyword()
 
-    @classmethod
-    @ESControl.mall_index_create
-    def create(cls, body, params=None, headers=None):
-        return cls.name, f"{body.get('id')}_{body.get('brandId')}" \
-                         f"_{body.get('attr_id')}_{body.get('attr_product_attribute_id')}"
+    brandName = Keyword()
 
+    productCategoryName = Keyword()
+
+    name = Text(analyzer="ik_max_word")
+    subTitle = Text(analyzer="ik_max_word")
+    keywords = Text(analyzer="ik_max_word")
+
+    attrValueList = Nested()
+
+    class Index:
+        name = 'pms'
+
+
+
+if __name__ == '__main__':
+    connections.create_connection(hosts=['localhost'])
+    # connections.create_connection()
+    EsProduct.init()

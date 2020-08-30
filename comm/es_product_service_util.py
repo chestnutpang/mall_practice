@@ -48,8 +48,10 @@ def import_all_impl():
         .filter(p.delete_status == 0, p.publish_status == 1).join(pav, p.id == pav.product_id) \
         .join(pa, pav.product_attribute_id == pa.id)\
         .all()
+    index = 0
     for product in product_list:
+        index += 1
         doc = data_to_dict(product.keys(), product)
-        res = es_model.EsProduct.create(body=doc)
+        res = es_model.EsProduct.create(_id=index, body=doc)
         print(res)
     return len(product_list)
