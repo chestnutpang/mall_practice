@@ -1,4 +1,4 @@
-import elasticsearch
+from elasticsearch_dsl import connections
 
 
 class ESConn:
@@ -6,11 +6,6 @@ class ESConn:
 
     @classmethod
     def init(cls, es_host, es_port):
-        cls.es = elasticsearch.Elasticsearch(
-            f'{es_host}:{es_port}',
-            sniff_on_start=True,
-            sniff_on_connection_fail=True,
-            sniff_timeout=60
-        )
+        connections.create_connection(hosts=[f'{es_host}:{es_port}'])
 
 

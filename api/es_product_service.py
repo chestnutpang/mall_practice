@@ -1,7 +1,7 @@
 from flask import request
 from utils.server_tool import MallBlueprint
 import logging
-import comm
+from comm import es_product_service
 
 
 logger = logging.getLogger('es_product_service')
@@ -11,7 +11,7 @@ app = MallBlueprint('es_product_service', __name__)
 @app.route('/importAll', methods=['GET'])
 def import_all():
     """导入所有数据库的商品到 es 中"""
-    count = comm.import_all_impl()
+    count = es_product_service.import_all_impl()
     return {
         'success': count
     }
@@ -19,7 +19,7 @@ def import_all():
 
 @app.route('/delete/<_id>', methods=['POST'])
 def delete(_id):
-    pass
+    es_product_service.delete_product(_id)
     return {}
 
 
@@ -41,7 +41,7 @@ def search_simple():
     return {}
 
 
-@app.route('/search')
+@app.route('/search', methods=['GET'])
 def search():
     params = request.args
     sort = params.get('sort', 0)
@@ -52,4 +52,14 @@ def search():
     page_num = params.get('pageNum', 0)
     page_size = params.get('pageSize', 5)
 
+    return {}
+
+
+@app.route('/recommend/{id}', methods=['GET'])
+def recommend():
+    return {}
+
+
+@app.route('/search/relate', methods=['GET'])
+def search_relate():
     return {}

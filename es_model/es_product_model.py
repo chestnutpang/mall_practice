@@ -18,7 +18,6 @@ class EsProduct(Document):
         name = 'pms'
 
 
-
 if __name__ == '__main__':
     connections.create_connection(hosts=['localhost'])
     # connections.create_connection()
