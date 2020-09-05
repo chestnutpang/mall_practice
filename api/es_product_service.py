@@ -19,15 +19,20 @@ def import_all():
 
 @app.route('/delete/<_id>', methods=['POST'])
 def delete(_id):
-    es_product_service.delete_product(_id)
+    res = es_product_service.delete_product(_id)
     return {}
+
+
+@app.route('/get/<_id>', methods=['GET'])
+def get(_id):
+    res = es_product_service.get_product(_id)
+    return res.to_dict()
 
 
 @app.route('/delete/batch', methods=['POST'])
 def delete_batch():
     params = request.get_json()
     ids = params.get('ids')
-    pass
     return {}
 
 
@@ -55,8 +60,9 @@ def search():
     return {}
 
 
-@app.route('/recommend/{id}', methods=['GET'])
-def recommend():
+@app.route('/recommend/<_id>', methods=['POST'])
+def recommend(_id):
+    es_product_service.recommend_product(_id)
     return {}
 
 

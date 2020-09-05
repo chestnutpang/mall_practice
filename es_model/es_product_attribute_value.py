@@ -1,7 +1,6 @@
-from elasticsearch_dsl import Document, Keyword, Text, Nested, connections
+from elasticsearch_dsl import InnerDoc, Keyword
 
 
-class EsProductAttributeValue(Document):
+class EsProductAttributeValue(InnerDoc):
     value = Keyword()
     name = Keyword()
-
