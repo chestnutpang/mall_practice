@@ -66,12 +66,11 @@ def get_product_list(_id=None):
         product_list = product_query.all()
     product_map = {}
     for product in product_list:
-        product_keys, product_attr_keys = product.keys[:-5], product.keys[-5:]
         if product[0] in product_map:
             es_product = product_map[product[0]]
         else:
-            es_product = EsProduct(data_to_dict(product_keys, product[:-5]))
-        es_product.add_attr_value(data_to_dict(product_attr_keys, product[-5:]))
+            es_product = EsProduct(data_to_dict(product.keys[:-5], product[:-5]))
+        es_product.add_attr_value(data_to_dict(product.keys[-5:], product[-5:]))
         product_map[product[0]] = es_product
 
     for product in product_map.values():
@@ -89,8 +88,13 @@ def delete_product(_id):
 
 
 def create_product_by_id(_id):
-    for product in get_product_list(_id):
-        return create_product(product)
+    product_list = get_product_list(_id)
+    es_product = None
+    for product in product_list:
+        if es_product is None:
+            es_product = EsProduct(data_to_dict(product.keys[:-5], product[:-5]))
+        es_product.add_attr_value(data_to_dict(product.keys[-5:], product[-5:]))
+    es_product.save()
 
 
 def recommend_product(_id):
@@ -98,9 +102,9 @@ def recommend_product(_id):
     es_product.update(recommendStatus=1)
 
 
-def create_product(_id=None):
-    es_product = EsProduct(**data_to_dict(product.keys(), product))
-    return es_product.save()
+# def create_product(_id=None):
+#     es_product = EsProduct(**data_to_dict(product.keys(), product))
+#     return es_product.save()
 
 
 def search_product(search_param):
