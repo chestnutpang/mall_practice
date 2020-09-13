@@ -3,13 +3,12 @@ from gevent import monkey
 monkey.patch_all()
 import config
 from utils.server import MallServer, Application
-from api import *
+from controller import *
 
 
 def register_url():
     app = MallServer.app
-    app.register_blueprint(user.app, url_prefix='/user')
-    app.register_blueprint(es_product_service.app, url_prefix='/esProduct')
+    app.register_blueprint(es_product_controller.app, url_prefix='/esProduct')
     @app.route('/')
     def index():
         return 'yes'

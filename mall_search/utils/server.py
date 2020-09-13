@@ -4,7 +4,7 @@ from utils.signal_tool import SignalTool
 from utils.log_tool import log_init
 from utils.redis_tool import RedisConn
 from utils.es_tool import ESConn
-from utils.mysql_tool import db_init
+from utils.mysql_tool import DBMysql
 from utils.server_tool import *
 import logging
 import traceback
@@ -44,7 +44,7 @@ class Application:
     @classmethod
     def init(cls, config):
         try:
-            db_init(MallServer.app)
+            DBMysql.db_init(f'{config.mysql_host}:{config.mysql_port}', config.mysql_user, config.mysql_password, config.mysql_db)
             SignalTool.init(config.pid_path)
             log_init(config.log_path, config.log_level, config.log_reverse, config.log_to_console)
             RedisConn.init(config.redis_host, config.redis_post, config.redis_password, config.redis_db)

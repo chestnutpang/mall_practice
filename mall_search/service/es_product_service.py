@@ -1,20 +1,45 @@
-from sqlalchemy import func
-
-from model import *
-from utils.mysql_tool import data_to_dict
 from es_model import EsProduct
+from utils.es_tool import ESConn
+from service.sql import es_product_query
+from elasticsearch import helpers
+from utils.gevent_pool import gevent_pool
 
 
 # 导入全部商品
 def import_all_impl():
     count = 0
-    for product in get_product_list():
-        print(product.keys())
-        result = create_product(product)
-        count += 1 if result else 0
+    for value in get_product_bulk():
+        count += value[0]
+        gevent_pool.apply_async(save_product_bulk, [value[1], ])
     return count
 
 
+product_es_bulk = {
+    '_index': 'pms',
+    '_type': 'doc',
+    '_source': None
+}
+
+
+def get_product_bulk():
+    count = 0
+    bulk_list = []
+    for product in es_product_query():
+        pms = product_es_bulk['_source'] = product
+        bulk_list.append(pms)
+        count += 1
+        if count == 100:
+            yield count, bulk_list
+            count = 0
+    yield count, bulk_list
+
+
+def save_product_bulk(bulk_list):
+    helpers.bulk(ESConn.es, bulk_list)
+
+
+
+'''
 def get_product_list(_id=None):
     """
     SQL 语句:
@@ -95,16 +120,12 @@ def create_product_by_id(_id):
             es_product = EsProduct(data_to_dict(product.keys[:-5], product[:-5]))
         es_product.add_attr_value(data_to_dict(product.keys[-5:], product[-5:]))
     es_product.save()
+'''
 
 
 def recommend_product(_id):
     es_product = EsProduct.get(_id)
     es_product.update(recommendStatus=1)
-
-
-# def create_product(_id=None):
-#     es_product = EsProduct(**data_to_dict(product.keys(), product))
-#     return es_product.save()
 
 
 def search_product(search_param):

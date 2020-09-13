@@ -25,7 +25,6 @@ class DbBase(db.Model):
         db.session.delete(obj)
         db.session.commit()
 
-
     @classmethod
     def save_all(cls, data_list):
         db.session.add_all(data_list)

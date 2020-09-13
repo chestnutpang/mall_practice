@@ -6,6 +6,4 @@ class ESConn:
 
     @classmethod
     def init(cls, es_host, es_port):
-        connections.create_connection(hosts=[f'{es_host}:{es_port}'])
-
-
+        cls.es = connections.create_connection(hosts=[f'{es_host}:{es_port}'])

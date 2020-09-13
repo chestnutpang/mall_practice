@@ -129,4 +129,4 @@ class SignalTool:
 
 if __name__ == '__main__':
     # signal.alarm()
-    print(os.path.basename('./main.py'))
+    print(os.path.basename('./mall_search_application.py'))

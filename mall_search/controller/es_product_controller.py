@@ -1,7 +1,7 @@
 from flask import request
 from utils.server_tool import MallBlueprint
 import logging
-from comm import es_product_service
+from service import es_product_service
 
 
 logger = logging.getLogger('es_product_service')
@@ -19,6 +19,7 @@ def import_all():
 
 @app.route('/delete/<_id>', methods=['POST'])
 def delete(_id):
+    """根据id删除商品"""
     res = es_product_service.delete_product(_id)
     return {}
 
@@ -31,6 +32,7 @@ def get(_id):
 
 @app.route('/delete/batch', methods=['POST'])
 def delete_batch():
+    """根据id批量删除商品"""
     params = request.get_json()
     ids = params.get('ids')
     return {}
@@ -38,16 +40,22 @@ def delete_batch():
 
 @app.route('/create/<_id>', methods=['POST'])
 def create():
+    """根据id创建商品"""
     return {}
 
 
 @app.route('/search/simple', methods=['GET'])
 def search_simple():
+    """简单搜索"""
+    params = request.args
+    print(dict(params))
+    es_product_service.search_product(dict(params))
     return {}
 
 
 @app.route('/search', methods=['GET'])
 def search():
+    """综合搜索、筛选、排序"""
     params = request.args
     sort = params.get('sort', 0)
     value = params.get('value', '0')
@@ -62,10 +70,12 @@ def search():
 
 @app.route('/recommend/<_id>', methods=['POST'])
 def recommend(_id):
+    """根据商品id推荐商品"""
     es_product_service.recommend_product(_id)
     return {}
 
 
 @app.route('/search/relate', methods=['GET'])
 def search_relate():
+    """获取搜索的相关品牌、分类及筛选属性"""
     return {}

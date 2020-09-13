@@ -3,5 +3,5 @@ remove/
 .idea/
 __pycache__/
 *.pyc
-config.py
+mall_search/config.py
 crawler/
