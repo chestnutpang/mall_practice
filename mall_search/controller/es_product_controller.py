@@ -21,13 +21,14 @@ def import_all():
 def delete(_id):
     """根据id删除商品"""
     res = es_product_service.delete_product(_id)
-    return {}
+    return {
+        'count': res
+    }
 
 
 @app.route('/get/<_id>', methods=['GET'])
 def get(_id):
-    res = es_product_service.get_product(_id)
-    return res.to_dict()
+    return es_product_service.get_product(_id)
 
 
 @app.route('/delete/batch', methods=['POST'])
@@ -35,22 +36,37 @@ def delete_batch():
     """根据id批量删除商品"""
     params = request.get_json()
     ids = params.get('ids')
-    return {}
+
+    if not isinstance(ids, list):
+        raise ValueError
+    count = es_product_service.delete_product_batch(ids)
+    return {
+        'count': count
+    }
 
 
 @app.route('/create/<_id>', methods=['POST'])
-def create():
+def create(_id):
     """根据id创建商品"""
-    return {}
+    if not isinstance(_id, int):
+        raise ValueError
+    res = es_product_service.get_product_bulk(_id)
+    return {
+        'count': res
+    }
 
 
 @app.route('/search/simple', methods=['GET'])
 def search_simple():
     """简单搜索"""
     params = request.args
-    print(dict(params))
-    es_product_service.search_product(dict(params))
-    return {}
+    if not params:
+        res = []
+    else:
+        res = es_product_service.search_product(dict(params))
+    return {
+        'res': res
+    }
 
 
 @app.route('/search', methods=['GET'])

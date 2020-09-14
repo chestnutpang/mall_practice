@@ -12,13 +12,6 @@ def import_all_impl():
     return count
 
 
-product_es_bulk = {
-    '_index': 'pms',
-    '_type': 'doc',
-    '_source': None
-}
-
-
 def get_product_bulk(_id=None):
     pms_map = {}
     for product, attr in es_product_query(_id):
@@ -35,9 +28,28 @@ def get_product_bulk(_id=None):
         count += 1
     return count
 
-def save_product_bulk(bulk_list):
-    helpers.bulk(ESConn.es, bulk_list)
 
+def delete_product(_id):
+    es = EsProduct.get(_id)
+    es.delete()
+    return 1
+
+
+def get_product(_id):
+    return EsProduct.get(_id).to_dict()
+
+
+def delete_product_batch(ids):
+    pass
+
+
+# product_es_bulk = {
+#     '_index': 'pms',
+#     '_type': 'doc',
+#     '_source': None
+# }
+# def save_product_bulk(bulk_list):
+#     helpers.bulk(ESConn.es, bulk_list)
 
 
 '''
@@ -131,6 +143,9 @@ def recommend_product(_id):
 
 def search_product(search_param):
     product_search = EsProduct.search().query("match", **search_param)
-    res = product_search.execute()
-    print(res)
-    return {}
+    # product_search = EsProduct.search()
+    res = []
+    hits = product_search.execute().hits
+    for hit in hits:
+        res.append(hit.to_dict())
+    return res
