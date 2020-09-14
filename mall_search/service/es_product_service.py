@@ -3,14 +3,12 @@ from utils.es_tool import ESConn
 from service.sql import es_product_query
 from elasticsearch import helpers
 from utils.gevent_pool import gevent_pool
+import copy
 
 
 # 导入全部商品
 def import_all_impl():
-    count = 0
-    for value in get_product_bulk():
-        count += value[0]
-        gevent_pool.apply_async(save_product_bulk, [value[1], ])
+    count = get_product_bulk()
     return count
 
 
@@ -21,18 +19,21 @@ product_es_bulk = {
 }
 
 
-def get_product_bulk():
+def get_product_bulk(_id=None):
+    pms_map = {}
+    for product, attr in es_product_query(_id):
+        if pms_map.get(product.get('id')) is None:
+            pms = EsProduct(**product)
+            pms.meta.id = product.get('id')
+        else:
+            pms = pms_map.get(product.get('id'))
+        pms.add_attr_value(attr)
+        pms_map[product.get('id')] = pms
     count = 0
-    bulk_list = []
-    for product in es_product_query():
-        pms = product_es_bulk['_source'] = product
-        bulk_list.append(pms)
+    for pms in pms_map.values():
+        pms.save()
         count += 1
-        if count == 100:
-            yield count, bulk_list
-            count = 0
-    yield count, bulk_list
-
+    return count
 
 def save_product_bulk(bulk_list):
     helpers.bulk(ESConn.es, bulk_list)

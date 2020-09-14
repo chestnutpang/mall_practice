@@ -26,8 +26,8 @@ class MallServer:
         钩子函数，请求前处理与请求后处理
         """
         cls.init_register()
-        cls.app.config['SQLALCHEMY_DATABASE_URI'] = cls.config.SQLALCHEMY_DATABASE_URI
-        cls.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = cls.config.SQLALCHEMY_TRACK_MODIFICATIONS
+        # cls.app.config['SQLALCHEMY_DATABASE_URI'] = cls.config.SQLALCHEMY_DATABASE_URI
+        # cls.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = cls.config.SQLALCHEMY_TRACK_MODIFICATIONS
         cls.app.errorhandler(Exception)(handle_error)
         cls.app.before_request(before_request)
         cls.app.after_request(after_request)
@@ -44,7 +44,7 @@ class Application:
     @classmethod
     def init(cls, config):
         try:
-            DBMysql.db_init(f'{config.mysql_host}:{config.mysql_port}', config.mysql_user, config.mysql_password, config.mysql_db)
+            DBMysql.db_init(config.mysql_host, config.mysql_user, config.mysql_password, config.mysql_db, config.mysql_port)
             SignalTool.init(config.pid_path)
             log_init(config.log_path, config.log_level, config.log_reverse, config.log_to_console)
             RedisConn.init(config.redis_host, config.redis_post, config.redis_password, config.redis_db)

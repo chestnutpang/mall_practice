@@ -41,9 +41,10 @@ def es_product_query(_id=None):
     DBMysql.cursor.execute(query)
     results = DBMysql.cursor.fetchall()
     desc = list(map(lambda x: x[0], DBMysql.cursor.description))
-
     for result in results:
-        yield data_to_dict(desc, result)
+        product = data_to_dict(desc[:-5], result[:-5])
+        attr = data_to_dict(desc[-5:], result[-5:])
+        yield product, attr
 
 
 def data_to_dict(keys, values):
