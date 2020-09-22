@@ -34,12 +34,7 @@ def get(_id):
 @app.route('/delete/batch', methods=['POST'])
 def delete_batch():
     """根据id批量删除商品"""
-    params = request.get_json()
-    ids = params.get('ids')
-
-    if not isinstance(ids, list):
-        raise ValueError
-    count = es_product_service.delete_product_batch(ids)
+    count = es_product_service.delete_product_batch()
     return {
         'count': count
     }
@@ -59,11 +54,8 @@ def create(_id):
 @app.route('/search/simple', methods=['GET'])
 def search_simple():
     """简单搜索"""
-    params = request.args
-    if not params:
-        res = []
-    else:
-        res = es_product_service.search_product(dict(params))
+
+    res = es_product_service.search_product_simple()
     return {
         'res': res
     }
@@ -72,15 +64,8 @@ def search_simple():
 @app.route('/search', methods=['GET'])
 def search():
     """综合搜索、筛选、排序"""
-    params = request.args
-    sort = params.get('sort', 0)
-    value = params.get('value', '0')
-    keyword = params.get('keyword')
-    brand_id = params.get('brandId')
-    product_category_id = params.get('productCategoryId')
-    page_num = params.get('pageNum', 0)
-    page_size = params.get('pageSize', 5)
-
+    
+    res = es_product_service.search_product()
     return {}
 
 

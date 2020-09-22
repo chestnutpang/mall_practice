@@ -1,6 +1,8 @@
 from elasticsearch_dsl import Document, Keyword, Text, Nested, connections
 from es_model.es_product_attribute_value import EsProductAttributeValue
 
+from elasticsearch_dsl import NestedFacet
+
 
 class EsProduct(Document):
     productSn = Keyword()
@@ -23,6 +25,9 @@ class EsProduct(Document):
         self.attrValueList.append(
             product_attribute_value
         )
+    
+    class NestedSearch(NestedFacet):
+        pass
 
 
 if __name__ == '__main__':

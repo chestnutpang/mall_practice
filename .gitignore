@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 mall_search/config.py
 crawler/
+python_version/

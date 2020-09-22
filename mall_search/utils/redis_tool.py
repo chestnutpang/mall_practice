@@ -1,5 +1,6 @@
 import redis
 import logging
+import sys
 
 logger = logging.getLogger('redis')
 
@@ -23,3 +24,5 @@ class RedisConn:
                 logger.error(f'redis connect error:{e}')
                 continue
             break
+        else:
+            sys.exit(1)

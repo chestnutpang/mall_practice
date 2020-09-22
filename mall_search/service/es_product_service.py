@@ -4,6 +4,7 @@ from service.sql import es_product_query
 from elasticsearch import helpers
 from utils.gevent_pool import gevent_pool
 import copy
+from flask import request
 
 
 # 导入全部商品
@@ -39,8 +40,14 @@ def get_product(_id):
     return EsProduct.get(_id).to_dict()
 
 
-def delete_product_batch(ids):
-    pass
+def delete_product_batch():
+    params = request.get_json()
+    ids = params.get('ids')
+
+    if not isinstance(ids, list):
+        raise ValueError
+    count = 0
+    return count
 
 
 # product_es_bulk = {
@@ -141,7 +148,45 @@ def recommend_product(_id):
     es_product.update(recommendStatus=1)
 
 
-def search_product(search_param):
+def search_product_simple():
+    params = request.args
+    if not params:
+        res = []
+    else:
+        search_param = dict(params)
+        product_search = EsProduct.search().query("match", **search_param)
+        # product_search = EsProduct.search()
+        res = []
+        hits = product_search.execute().hits
+        for hit in hits:
+            res.append(hit.to_dict())
+    return res
+
+
+def search_product():
+    params = request.args
+    kwargs = {}
+    brand_id = params.get('brandId')
+    product_category_id = params.get('productCategoryId')
+    if brand_id:
+        kwargs['brandId'] = brand_id
+    if product_category_id:
+        kwargs['productCategoryId'] = product_category_id
+
+    keyword = params.get('keyword')
+    if keyword:
+        pass
+    else:
+        pass
+
+    sort = params.get('sort', 0)
+
+    value = params.get('value', '0')
+
+
+    page_num = params.get('pageNum', 0)
+    page_size = params.get('pageSize', 5)
+
     product_search = EsProduct.search().query("match", **search_param)
     # product_search = EsProduct.search()
     res = []
@@ -149,3 +194,4 @@ def search_product(search_param):
     for hit in hits:
         res.append(hit.to_dict())
     return res
+
